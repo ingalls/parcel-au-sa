@@ -32,5 +32,5 @@ curl -s \
 
 gdal_translate -of GTiff -a_ullr $Q $W $E $R -a_srs 'EPSG:3857' /tmp/au_${3}_${2}.png /tmp/au_${3}_parcels/${2}.tif
 
-rm /tmp/au_${3}_${2}.*
+rm /tmp/au_${3}_${2}.png
 echo "$2/$4"

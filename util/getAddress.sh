@@ -41,6 +41,6 @@ echo "{" \
      "    \"type\": \"Polygon\"," \
      "    \"coordinates\": $(echo $ADDR | jq -r -c '.results[0].geometry.rings')" \
      "   }" \
-     "}," >> au_${4}.geojson
+     "}," >> /tmp/au_final_${4}.geojson
 
 echo "$2/$3"

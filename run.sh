@@ -54,9 +54,11 @@ jq -r -c '.features | .[] | .geometry | .coordinates' /tmp/au_${GRID}_parcel_pts
 PROG_TOT=$(wc -l /tmp/au_${GRID}_coords | grep -Po '\d+')
 rm /tmp/au_${GRID}_parcel_pts.geojson
 
-echo "{ \"type\": \"FeatureCollection\", \"features\": [" > au_${GRID}.geojson
 cat /tmp/au_${GRID}_coords | parallel -j1 --gnu "./util/getAddress.sh \"{}\" \"{#}\" \"$PROG_TOT\" \"$GRID\""
-sed -i '$s/,$//' /tmp/au_${GRID}.geojson
+
+echo "{ \"type\": \"FeatureCollection\", \"features\": [" > au_${GRID}.geojson
+sort /tmp/au_final_${GRID}.geojson | uniq >> au_${GRID}.geojson
+sed -i '$s/,$//' au_${GRID}.geojson
 echo "]}" >> au_${GRID}.geojson
 
 rm /tmp/au_${GRID}_coords
