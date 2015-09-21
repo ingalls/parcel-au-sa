@@ -40,23 +40,23 @@ echo "ok - reproject to 4326"
 ogr2ogr /tmp/au_${GRID}_parcel_out.geojson /tmp/au_${GRID}_parcel_tile.shp -s_srs EPSG:3857 -t_srs EPSG:4326 -f "GeoJSON"
 rm /tmp/au_${GRID}_parcel_tile.*
 
-exit
-
-echo "ok - filter by black"
-echo '{ "type": "FeatureCollection", "features": [' > /tmp/${GRID}_parcel_pts.geojson.tmp
-grep "DN\": 0" /tmp/${GRID}_parcel_out.geojson >> /tmp/${GRID}_parcel_pts.geojson.tmp
-sed -i '$s/,$//' /tmp/${GRID}_parcel_pts.geojson.tmp
-echo ']}' >> /tmp/${GRID}_parcel_pts.geojson.tmp
+echo "ok - filter by parcel fill"
+echo '{ "type": "FeatureCollection", "features": [' > /tmp/au_${GRID}_parcel_pts.geojson.tmp
+grep "DN\": 232" /tmp/au_${GRID}_parcel_out.geojson >> /tmp/au_${GRID}_parcel_pts.geojson.tmp
+sed -i '$s/,$//' /tmp/au_${GRID}_parcel_pts.geojson.tmp
+echo ']}' >> /tmp/au_${GRID}_parcel_pts.geojson.tmp
 
 echo "ok - poly => pt"
-./node_modules/turf-cli/turf-point-on-surface.js /tmp/${GRID}_parcel_pts.geojson.tmp > /tmp/${GRID}_parcel_pts.geojson
-rm /tmp/${GRID}_parcel_pts.geojson.tmp
+./node_modules/turf-cli/turf-point-on-surface.js /tmp/au_${GRID}_parcel_pts.geojson.tmp > /tmp/au_${GRID}_parcel_pts.geojson
+rm /tmp/au_${GRID}_parcel_pts.geojson.tmp
 
+jq -r -c '.features | .[] | .geometry | .coordinates' /tmp/au_${GRID}_parcel_pts.geojson > /tmp/au_${GRID}_coords
+PROG_TOT=$(wc -l /tmp/au_${GRID}_coords | grep -Po '\d+')
+rm /tmp/au_${GRID}_parcel_pts.geojson
 
-jq -r -c '.features | .[] | .geometry | .coordinates' /tmp/${GRID}_parcel_pts.geojson > /tmp/${GRID}_coords
-PROG_TOT=$(wc -l /tmp/${GRID}_parcel_pts.geojson | grep -Po '\d+')
-rm /tmp/${GRID}_parcel_pts.geojson
+echo "{ \"type\": \"FeatureCollection\", \"features\": [" > au_${GRID}.geojson
+cat /tmp/au_${GRID}_coords | parallel -j1 --gnu "./util/getAddress.sh \"{}\" \"{#}\" \"$PROG_TOT\" \"$GRID\""
+sed -i '$s/,$//' /tmp/au_${GRID}.geojson
+echo "]}" >> au_${GRID}.geojson
 
-echo "LNG,LAT,STR,DISTRICT,REGION" > ${GRID}_out.csv
-cat /tmp/${GRID}_coords | parallel -j1 --gnu "./util/getAddress.sh \"{}\" \"{#}\" \"$PROG_TOT\" \"$GRID\""
-rm /tmp/${GRID}_coords
+rm /tmp/au_${GRID}_coords
