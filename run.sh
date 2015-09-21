@@ -23,7 +23,7 @@ else
 fi
 
 echo "ok - Beginning Download ($(wc -l /tmp/au_${GRID}_bounds | grep -Eo -m 1 "[0-9]+" | head -1) tiles)"
-PROG_TOT=$(wc -l /tmp/au_${GRID}_bounds | grep -Eo "[0-9]+")
+PROG_TOT=$(wc -l /tmp/au_${GRID}_bounds | grep -Eo "[0-9]+" | head -1)
 cat /tmp/au_${GRID}_bounds | parallel --gnu "$(dirname $0)/util/getImage.sh \"{}\" \"{#}\" \"$GRID\" \"${PROG_TOT}\""
 rm /tmp/au_${GRID}_bounds
 
@@ -56,9 +56,9 @@ rm /tmp/au_${GRID}_parcel_pts.geojson
 
 cat /tmp/au_${GRID}_coords | parallel -j1 --gnu "./util/getAddress.sh \"{}\" \"{#}\" \"$PROG_TOT\" \"$GRID\""
 
-echo "{ \"type\": \"FeatureCollection\", \"features\": [" > au_${GRID}.geojson
-sort /tmp/au_final_${GRID}.geojson | uniq >> au_${GRID}.geojson
-sed -i '$s/,$//' au_${GRID}.geojson
-echo "]}" >> au_${GRID}.geojson
+echo "{ \"type\": \"FeatureCollection\", \"features\": [" > out/au_${GRID}.geojson
+sort /tmp/au_final_${GRID}.geojson | uniq >> out/au_${GRID}.geojson
+sed -i '$s/,$//' out/au_${GRID}.geojson
+echo "]}" >> out/au_${GRID}.geojson
 
 rm /tmp/au_${GRID}_coords
