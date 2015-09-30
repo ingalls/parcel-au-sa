@@ -38,7 +38,6 @@ rm /tmp/au_${GRID}_parcel_out.tif
 echo "ok - reproject to 4326"
 # Polygonize will be as 54004 even though it is actually 3857
 ogr2ogr /tmp/au_${GRID}_parcel_out.geojson /tmp/au_${GRID}_parcel_tile.shp -s_srs EPSG:3857 -t_srs EPSG:4326 -f "GeoJSON"
-rm /tmp/au_${GRID}_parcel_tile.*
 
 echo "ok - filter by parcel fill"
 echo '{ "type": "FeatureCollection", "features": [' > /tmp/au_${GRID}_parcel_pts.geojson.tmp

@@ -28,6 +28,7 @@ QUERY=$(echo \
 curl -s \
     -H 'Host: maps.sa.gov.au' \
     -H 'Referer: http://maps.sa.gov.au/plb/' \
+    -H 'User-Agent: Mozilla/5.0 (Macintosh; Intel Mac OS X 10.10; rv:43.0) Gecko/20100101 Firefox/43.0' \
     "$QUERY" > /tmp/au_${3}_${2}.png
 
 gdal_translate -of GTiff -a_ullr $Q $W $E $R -a_srs 'EPSG:3857' /tmp/au_${3}_${2}.png /tmp/au_${3}_parcels/${2}.tif
