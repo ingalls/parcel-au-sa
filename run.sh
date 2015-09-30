@@ -51,7 +51,7 @@ echo "ok - poly => pt"
 rm /tmp/au_${GRID}_parcel_pts.geojson.tmp
 
 jq -r -c '.features | .[] | .geometry | .coordinates' /tmp/au_${GRID}_parcel_pts.geojson > /tmp/au_${GRID}_coords
-PROG_TOT=$(wc -l /tmp/au_${GRID}_coords | grep -Po '\d+')
+PROG_TOT=$(wc -l /tmp/au_${GRID}_coords | grep -Po '\d+' | head -1)
 rm /tmp/au_${GRID}_parcel_pts.geojson
 
 cat /tmp/au_${GRID}_coords | parallel -j1 --gnu "./util/getAddress.sh \"{}\" \"{#}\" \"$PROG_TOT\" \"$GRID\""
